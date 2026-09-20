@@ -1,1 +1,24 @@
 
+
+{
+  "name": "DV Icons & Images",
+  "short_name": "DV Icons",
+  "description": "Self-contained, offline-first tool for preparing icons, images and banners directly on your phone.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1877F2",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://i.ibb.co/7JvSDTWk/file-0000000072b881f4b7d4a61c53613ad1.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.ibb.co/7JvSDTWk/file-0000000072b881f4b7d4a61c53613ad1.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
