@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en" data-dv-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>DV Icons &amp; Images</title>
+<meta name="theme-color" content="#1877F2" id="dvThemeMeta">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="./manifest.json">
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+<div class="dv-app">
+<header class="dv-header">
+ <button class="dv-hbtn" id="dvHamburgerBtn" aria-label="Open menu" aria-expanded="false" aria-controls="dvInfoMenu">
+  <svg class="dv-icon" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="2"/><rect x="3" y="11" width="18" height="2"/><rect x="3" y="16" width="18" height="2"/></svg>
+ </button>
+ <div class="dv-title">DV Icons &amp; Images</div>
+ <div class="dv-header-actions">
+  <button class="dv-hbtn" id="dvThemeBtn" aria-label="Toggle dark mode"></button>
+  <button class="dv-hbtn" id="dvMenuBtn" aria-label="Open settings" aria-expanded="false" aria-controls="dvSettingsSidebar">
+   <svg class="dv-icon" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+  </button>
+ </div>
+</header>
+
+<main class="dv-main">
+<div id="dvToastWrap" class="dv-toast-wrap" aria-live="polite"><div id="dvToast" class="dv-toast"></div></div>
+
+<!-- IMAGE TAB -->
+<div id="dvViewImage">
+<section class="dv-card">
+ <h2>Select Image</h2>
+ <div class="dv-drop" id="dvDrop">
+  <div class="dv-drop-inner">
+   <div class="dv-drop-icon" aria-hidden="true">+</div>
+   <strong>Choose an Image</strong>
+   <span>Tap here to select an image from your device.</span>
+   <input id="dvFile" type="file" accept="image/*">
+  </div>
+ </div>
+</section>
+
+<section class="dv-card dv-hidden" id="dvEditor">
+ <h2>Image Preview</h2>
+ <div class="dv-preview-box"><img id="dvPreview" class="dv-preview" alt="Image preview"></div>
+ <div id="dvInfo" class="dv-info"></div>
+ <div class="dv-field">
+  <label for="dvName">File Name</label>
+  <input id="dvName" class="dv-input" type="text" placeholder="my-image" autocomplete="off">
+ </div>
+ <div class="dv-field">
+  <label for="dvFormat">Image Format</label>
+  <select id="dvFormat" class="dv-select">
+   <option value="original">Original</option>
+   <option value="image/png">PNG</option>
+   <option value="image/jpeg">JPEG</option>
+   <option value="image/webp">WebP</option>
+  </select>
+ </div>
+ 
+<div class="dv-field">
+  <label for="dvWidth">Maximum Width (px)</label>
+  <div class="dv-num-row">
+   <button type="button" class="dv-stepper" id="dvWidthDown">-</button>
+   <input id="dvWidth" class="dv-input" type="number" min="100" max="2400" step="50" value="1200">
+   <button type="button" class="dv-stepper" id="dvWidthUp">+</button>
+  </div>
+  <div class="dv-presets" role="group">
+   <button type="button" class="dv-preset" data-w="192">192</button>
+   <button type="button" class="dv-preset" data-w="512">512</button>
+   <button type="button" class="dv-preset" data-w="1024">1024</button>
+   <button type="button" class="dv-preset" data-w="1200">1200</button>
+  </div>
+ </div>
+ 
+<div class="dv-field" id="dvQualityField">
+  <label for="dvQuality">Quality (%)</label>
+  <div class="dv-num-row">
+   <button type="button" class="dv-stepper" id="dvQualityDown">-</button>
+   <input id="dvQuality" class="dv-input" type="number" min="40" max="100" step="1" value="90">
+   <button type="button" class="dv-stepper" id="dvQualityUp">+</button>
+  </div>
+ </div>
+ 
+<div class="dv-actions">
+  <button id="dvProcess" class="dv-btn dv-primary">Prepare Image</button>
+  <button id="dvRemove" class="dv-btn dv-danger">Remove Image</button>
+ </div>
+</section>
+
+<section class="dv-card dv-hidden" id="dvResult">
+ <h2>Ready</h2>
+ <div class="dv-preview-box"><img id="dvResultPreview" class="dv-preview" alt="Processed image"></div>
+ <div id="dvResultInfo" class="dv-result-info"></div>
+ <div class="dv-actions">
+  <button id="dvDownload" class="dv-btn dv-primary">Download Image</button>
+  <button id="dvCopyData" class="dv-btn dv-secondary">Copy as Data URL</button>
+  <button id="dvRetry" class="dv-btn dv-secondary">Change Settings</button>
+ </div>
+</section>
+</div>
+
+<div id="dvViewBanner" class="dv-hidden" style="overflow-x:hidden;max-width:100%">
+<section class="dv-card">
+ <h2>Canvas Size</h2>
+ <div class="dv-size-chips" id="dvSizeChips" role="group">
+  <button class="dv-chip active" data-w="1200" data-h="630">1200x630</button>
+  <button class="dv-chip" data-w="1080" data-h="1080">1080x1080</button>
+  <button class="dv-chip" data-w="1080" data-h="1920">1080x1920</button>
+  <button class="dv-chip" data-w="1920" data-h="1080">1920x1080</button>
+  <button class="dv-chip" data-w="800" data-h="400">800x400</button>
+ </div>
+</section>
+
+<section class="dv-card">
+ <h2>Banner</h2>
+ <div class="dv-banner-stage" id="dvBannerStage">
+  <canvas id="dvBannerCanvas" class="dv-banner-canvas"></canvas>
+  <div id="dvBannerItems"></div>
+ </div>
+ 
+<div class="dv-actions dv-row">
+  <button id="dvAddText" class="dv-btn dv-primary">+ Text</button>
+  <button id="dvAddAuthor" class="dv-btn dv-primary">+ Author</button>
+ </div>
+ 
+<div class="dv-actions dv-row">
+  <button id="dvSetBgImage" class="dv-btn dv-secondary">+ Background</button>
+  <button id="dvBannerDownloadTop" class="dv-btn dv-secondary">Save</button>
+ </div>
+ <input id="dvBgImageInput" type="file" accept="image/*" class="dv-hidden">
+</section>
+
+<section class="dv-card dv-hidden" id="dvTextToolbar">
+ <h2 id="dvToolbarTitle">Edit Text</h2>
+ <div class="dv-field">
+  <label for="dvTextContent">Content</label>
+  <textarea id="dvTextContent" class="dv-input" rows="2"></textarea>
+ </div>
+ 
+<div class="dv-field">
+  <label for="dvTextSize">Font Size (px)</label>
+  <div class="dv-num-row">
+   <button type="button" class="dv-stepper" id="dvTextSizeDown">-</button>
+   <input id="dvTextSize" class="dv-input" type="number" min="18" max="200" step="1" value="64">
+   <button type="button" class="dv-stepper" id="dvTextSizeUp">+</button>
+  </div>
+ </div>
+
+ <div class="dv-tool-row">
+  <button class="dv-tool-btn" id="dvBoldBtn"><b>B</b> Bold</button>
+  <button class="dv-tool-btn" id="dvItalicBtn"><i>I</i> Italic</button>
+ </div>
+ <div class="dv-field">
+  <label>Text Color</label>
+  <div class="dv-color-row">
+   <input id="dvTextColor" type="color" value="#111111" class="dv-color-swatch">
+   <input id="dvTextHex" type="text" class="dv-hex-input" value="#111111" placeholder="#RRGGBB or color name">
+  </div>
+  <div class="dv-swatches" id="dvTextSwatches"></div>
+ </div>
+ 
+<div class="dv-field">
+  <label>Background Color</label>
+  <div class="dv-color-row">
+   <input id="dvBgColor" type="color" value="#ffffff" class="dv-color-swatch">
+   <input id="dvBgHex" type="text" class="dv-hex-input" value="#FFFFFF" placeholder="#RRGGBB or color name">
+  </div>
+  <div class="dv-tool-row">
+   <button class="dv-tool-btn" id="dvBgToggleBtn">Toggle BG</button>
+   <button class="dv-tool-btn" id="dvDeleteItemBtn">Delete</button>
+  </div>
+ </div>
+</section>
+
+<section class="dv-card">
+ <div class="dv-actions dv-row">
+  <button id="dvBannerBg" class="dv-btn dv-secondary">BG Color</button>
+  <button id="dvBannerClear" class="dv-btn dv-danger">Clear</button>
+ </div>
+ <div class="dv-field">
+  <label>Canvas Background</label>
+  <div class="dv-color-row">
+   <input id="dvCanvasBgColor" type="color" value="#1877F2" class="dv-color-swatch">
+   <input id="dvCanvasBgHex" type="text" class="dv-hex-input" value="#1877F2" placeholder="#RRGGBB or color name">
+  </div>
+  <div class="dv-swatches" id="dvCanvasSwatches"></div>
+ </div>
+ <div class="dv-actions">
+  <button id="dvBannerDownload" class="dv-btn dv-primary">Download Banner</button>
+ </div>
+</section>
+</div>
+</main>
+
+<footer class="dv-footer">DV Icons &amp; Images</footer>
+</div>
+
+<nav class="dv-bottomnav" id="dvBottomNav">
+ <button class="dv-navbtn active" id="dvNavImage">
+  <svg class="dv-icon" viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm1 2v9.5l4-4 3 3 5-5 3 3V7H5z"/></svg>
+  <span>Images</span>
+ </button>
+ <button class="dv-navbtn" id="dvNavBanner">
+  <svg class="dv-icon" viewBox="0 0 24 24"><path d="M3 6h18v4H3zM3 14h18v4H3z"/></svg>
+  <span>Banner</span>
+ </button>
+ <button class="dv-navbtn" id="dvNavNotepad">
+  <svg class="dv-icon" viewBox="0 0 24 24"><path d="M6 2h9l5 5v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm8 1.5V8h4.5zM7 12h10v2H7zm0 4h10v2H7zm0-8h5v2H7z"/></svg>
+  <span>Notepad</span>
+ </button>
+ <button class="dv-navbtn" id="dvNavSettings">
+  <svg class="dv-icon" viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm8.94 3a7.9 7.9 0 0 0-.16-1.6l2.02-1.58-2-3.46-2.38.96a8 8 0 0 0-2.76-1.6L15.3 1H8.7l-.36 2.72a8 8 0 0 0-2.76 1.6l-2.38-.96-2 3.46L3.22 9.4A7.9 7.9 0 0 0 3.06 11c0 .55.06 1.08.16 1.6L1.2 14.18l2 3.46 2.38-.96a8 8 0 0 0 2.76 1.6L8.7 21h6.6l.36-2.72a8 8 0 0 0 2.76-1.6l2.38.96 2-3.46-2.02-1.58c.1-.52.16-1.05.16-1.6z"/></svg>
+  <span>Settings</span>
+ </button>
+</nav>
+
+<div class="dv-sidebar" id="dvSettingsSidebar" role="dialog" aria-modal="true" aria-label="Settings">
+ <div class="dv-backdrop" id="dvSettingsBackdrop"></div>
+ <aside class="dv-panel">
+  <div class="dv-side-head">
+   <div class="dv-side-title">Settings</div>
+   <button class="dv-close" id="dvSettingsCloseBtn" aria-label="Close settings">&times;</button>
+  </div>
+  <div class="dv-side-body">
+   <div class="dv-side-row">
+    <span>Dark mode</span>
+    <button class="dv-switch" id="dvDarkSwitch" role="switch" aria-checked="false"><i></i></button>
+   </div>
+   <button class="dv-side-item" id="dvSideNew">New Image</button>
+   <button class="dv-side-item" id="dvSideOpen">Select Image</button>
+   <button class="dv-side-item" id="dvSideBanner">Banner Editor</button>
+   <button class="dv-side-item" id="dvSideInstall">Install App</button>
+   <button class="dv-side-item" id="dvSideDownload">Download</button>
+   <div class="dv-side-note">Everything runs inside your browser. Nothing is uploaded.</div>
+  </div>
+  <div class="dv-brand">DV Icons &amp; Images</div>
+ </aside>
+</div>
+
+<div class="dv-fullmenu" id="dvInfoMenu" role="dialog" aria-modal="true" aria-label="Menu">
+ <div class="dv-fullmenu-head">
+  <button class="dv-close dv-hidden" id="dvInfoBackBtn" aria-label="Back">
+   <svg class="dv-icon" viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8 1.4-1.4L9.8 12l6.6-6.6z"/></svg>
+  </button>
+  <div class="dv-side-title" id="dvInfoMenuTitle">Menu</div>
+  <button class="dv-close" id="dvInfoCloseBtn" aria-label="Close menu">&times;</button>
+ </div>
+ <div class="dv-fullmenu-body" id="dvInfoMenuBody">
+
+  <div id="dvInfoList">
+   <button class="dv-side-item" data-page="about-app">About the App</button>
+   <button class="dv-side-item" data-page="about-dev">About Developer</button>
+   <button class="dv-side-item" data-page="proprietary">Proprietary Software</button>
+   <button class="dv-side-item" data-page="support">Support Us</button>
+   <button class="dv-side-item" data-page="howto">How to Use the App</button>
+   <button class="dv-side-item" data-page="terms">Terms of Use</button>
+   <button class="dv-side-item" data-page="contact">Contact Us</button>
+   <button class="dv-side-item" id="dvInfoExit">Exit Sidebar</button>
+  </div>
+
+  <div class="dv-info-page dv-hidden" data-page="about-app">
+   <h3>About the App</h3>
+   <p>DV Icons &amp; Images is a self-contained, offline-first tool for preparing icons, images and banners directly on your phone. There is no server, no account and no upload — every operation starts and ends on this device.</p>
+  </div>
+
+  <div class="dv-info-page dv-hidden" data-page="about-dev">
+   <h3>About Developer</h3>
+   <p>Built and maintained by [Developer / Organization Name]. Replace this placeholder with your own name, ministry or organization bio.</p>
+  </div>
+
+  <div class="dv-info-page dv-hidden" data-page="proprietary">
+   <h3>Proprietary Software</h3>
+   <p>&copy; [Year] [Organization Name]. All rights reserved. This application and its source code are proprietary. No part of this software may be copied, redistributed or reverse engineered without prior written permission from the owner.</p>
+  </div>
+
+  <div class="dv-info-page dv-hidden" data-page="support">
+   <h3>Support Us</h3>
+   <p>This app is offered free of charge. If it has been useful to you, please consider supporting continued development and hosting costs. Support details will appear here — replace this placeholder with your donation link or account information.</p>
+  </div>
+
+  <div class="dv-info-page dv-hidden" data-page="howto">
+   <h3>How to Use the App</h3>
+   <p>1. Open the Images tab and select a photo from your device.</p>
+   <p>2. Choose a file name, format and maximum width, then tap Prepare Image.</p>
+   <p>3. Download the result or copy it as a data URL.</p>
+   <p>4. Switch to the Banner tab to compose text and author credits over a background, then download the finished banner.</p>
+  </div>
+
+  <div class="dv-info-page dv-hidden" data-page="terms">
+   <h3>Terms of Use</h3>
+   <p>By using this application you agree to use it lawfully and at your own risk. The app is provided "as is" without warranty of any kind. The developer is not liable for any loss or damage arising from use of this app. Replace this placeholder with your full terms.</p>
+  </div>
+
+  <div class="dv-info-page dv-hidden" data-page="contact">
+   <h3>Contact Us</h3>
+   <p>[Organization Name]<br>[Street Address, City, Country]<br>Support hours: Mon-Fri, 9am-5pm</p>
+   <div class="dv-cta-row">
+    <a class="dv-cta-btn" href="mailto:info@yourorganization.org" aria-label="Email us">
+     <svg class="dv-icon" viewBox="0 0 24 24"><path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm1 2.4V17h16V7.4l-8 5.6z"/></svg>
+     <span>Email</span>
+    </a>
+    <a class="dv-cta-btn" href="tel:+10000000000" aria-label="Call us">
+     <svg class="dv-icon" viewBox="0 0 24 24"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1z"/></svg>
+     <span>Phone</span>
+    </a>
+    <a class="dv-cta-btn" href="https://wa.me/10000000000" target="_blank" rel="noopener" aria-label="WhatsApp us">
+     <svg class="dv-icon" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 0 1 6.8 12.2l-.3.5.7 2.5-2.6-.7-.5.3A8 8 0 1 1 12 4zm-3.4 4.1c-.2 0-.5 0-.7.3-.2.3-.9.9-.9 2.1s.9 2.4 1 2.6c.1.2 1.8 2.9 4.5 3.9 2.2.9 2.7.7 3.2.6.5-.1 1.6-.6 1.8-1.3.2-.6.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3-.3-.2-1.6-.8-1.9-.9-.3-.1-.4-.2-.6.2-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.5-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.2-.6-1.6-.9-2.1-.2-.5-.4-.4-.6-.4z"/></svg>
+     <span>WhatsApp</span>
+    </a>
+    <a class="dv-cta-btn" href="https://facebook.com/yourpage" target="_blank" rel="noopener" aria-label="Facebook page">
+     <svg class="dv-icon" viewBox="0 0 24 24"><path d="M14 21v-7h2.4l.4-3H14V9c0-.9.2-1.5 1.6-1.5H17V5c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.5-4 4.1V11H8v3h2.6v7z"/></svg>
+     <span>Facebook</span>
+    </a>
+   </div>
+  </div>
+ </div>
+</div>
+
+<div class="dv-fullmenu" id="dvNotepadLanding" role="dialog" aria-modal="true" aria-label="Notepad">
+ <div class="dv-fullmenu-head">
+  <div style="width:42px"></div>
+  <div class="dv-side-title">Notepad</div>
+  <button class="dv-close" id="dvNotepadCloseBtn" aria-label="Close notepad">&times;</button>
+ </div>
+ <div class="dv-fullmenu-body">
+  <div id="dvNotesEmpty" class="dv-info-page"><p>No notes yet. Tap the + button to create your first note.</p></div>
+  <div id="dvNotesList"></div>
+ </div>
+ <button class="dv-fab" id="dvNotesFab" aria-label="New note">+</button>
+</div>
+
+<div class="dv-fullmenu" id="dvNotepadWorkspace" role="dialog" aria-modal="true" aria-label="Note editor">
+ <div class="dv-fullmenu-head dv-fullmenu-head-accent">
+  <button class="dv-close" id="dvWorkspaceBackBtn" aria-label="Back to notes">
+   <svg class="dv-icon" viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8 1.4-1.4L9.8 12l6.6-6.6z"/></svg>
+  </button>
+  <div class="dv-side-title" id="dvWorkspaceTitle">Notepad</div>
+  <button class="dv-save-btn" id="dvTbSave">
+   <svg class="dv-icon" viewBox="0 0 24 24"><path d="M5 3h11l3 3v15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm2 2v5h8V5H7zm0 8v6h10v-6H7z"/></svg>
+   <span>SAVE</span>
+  </button>
+ </div>
+ <div class="dv-toolbar-scroll" id="dvToolbarScroll">
+  <button class="dv-tool-icn" id="dvTbNew">
+   <svg class="dv-icon" viewBox="0 0 24 24"><path d="M11 4h2v7h7v2h-7v7h-2v-7H4v-2h7z"/></svg>
+   <span>New</span>
+  </button>
+  <button class="dv-tool-icn" id="dvTbUndo">
+   <svg class="dv-icon" viewBox="0 0 24 24"><path d="M7 7H4V4H2v5a1 1 0 0 0 1 1h6V8H7c2-2.2 5.1-3.4 8.2-2.6 3.7 1 6 4.9 5 8.6-1 3.7-4.9 6-8.6 5-2.4-.6-4.3-2.4-5.1-4.6l-1.9.7c1 2.9 3.4 5.2 6.5 6 4.8 1.2 9.7-1.7 10.9-6.5S20.9 5 16.1 3.8C12.4 2.9 8.6 4.3 6.4 7z"/></svg>
+   <span>Undo</span>
+  </button>
+  <button class="dv-tool-icn" id="dvTbRedo">
+   <svg class="dv-icon" viewBox="0 0 24 24"><path d="M17 7h3V4h2v5a1 1 0 0 1-1 1h-6V8h2c-2-2.2-5.1-3.4-8.2-2.6-3.7 1-6 4.9-5 8.6 1 3.7 4.9 6 8.6 5 2.4-.6 4.3-2.4 5.1-4.6l1.9.7c-1 2.9-3.4 5.2-6.5 6-4.8 1.2-9.7-1.7-10.9-6.5S3.1 5 7.9 3.8C11.6 2.9 15.4 4.3 17.6 7z"/></svg>
+   <span>Redo</span>
+  </button>
+  <button class="dv-tool-icn" id="dvTbCopy">
+   <svg class="dv-icon" viewBox="0 0 24 24"><path d="M8 2h9l5 5v11a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm8 1.5V7h3.5zM4 8v13a1 1 0 0 0 1 1h11v-2H6V8H4z"/></svg>
+   <span>Copy</span>
+  </button>
+  <button class="dv-tool-icn" id="dvTbPaste">
+   <svg class="dv-icon" viewBox="0 0 24 24"><path d="M9 2h6a1 1 0 0 1 1 1v1h2a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h2V3a1 1 0 0 1 1-1zm0 2v2h6V4H9zm-2 4v13h10V8H7z"/></svg>
+   <span>Paste</span>
+  </button>
+  <button class="dv-tool-icn" id="dvTbSelect">
+   <svg class="dv-icon" viewBox="0 0 24 24"><path d="M3 3h4v2H5v2H3V3zm14 0h4v4h-2V5h-2V3zM3 17h2v2h2v2H3v-4zm18 0v4h-4v-2h2v-2h2zM7 7h10v10H7V7zm2 2v6h6V9H9z"/></svg>
+   <span>Select</span>
+  </button>
+  <button class="dv-tool-icn" id="dvTbZoomOut">
+   <svg class="dv-icon" viewBox="0 0 24 24"><path d="M10 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM7 9h6v2H7V9zm9.6 7.6 4.2 4.2-1.4 1.4-4.2-4.2z"/></svg>
+   <span>Zoom</span>
+  </button>
+  <button class="dv-tool-icn" id="dvTbZoomIn">
+   <svg class="dv-icon" viewBox="0 0 24 24"><path d="M10 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM9 7h2v2h2v2h-2v2H9v-2H7V9h2V7zm7.6 9.6 4.2 4.2-1.4 1.4-4.2-4.2z"/></svg>
+   <span>Zoom</span>
+  </button>
+  <button class="dv-tool-icn" id="dvTbDelete">
+   <svg class="dv-icon" viewBox="0 0 24 24"><path d="M7 4V2h10v2h5v2h-2v15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6H2V4h5zm2-2v0zM6 6v14h12V6H6zm2 3h2v8H8V9zm6 0h2v8h-2V9z"/></svg>
+   <span>Clear</span>
+  </button>
+  <button class="dv-tool-icn" id="dvTbDark">
+   <svg class="dv-icon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+   <span>Dark</span>
+  </button>
+ </div>
+ <textarea id="dvNoteTextarea" class="dv-note-textarea"></textarea>
+</div>
+
+<div class="dv-dropdown-overlay" id="dvNoteActionsWrap">
+ <div class="dv-dropdown-card" id="dvNoteActionsCard">
+  <button class="dv-dropdown-item dv-color-primary" id="dvNaRename">Rename</button>
+  <button class="dv-dropdown-item dv-color-primary" id="dvNaEdit">Edit Note</button>
+  <button class="dv-dropdown-item dv-color-danger" id="dvNaDelete">Delete</button>
+  <button class="dv-dropdown-item dv-color-green" id="dvNaWhatsapp">Share to WhatsApp</button>
+  <button class="dv-dropdown-item" id="dvNaShare">Share Sheet</button>
+  <button class="dv-dropdown-item dv-color-muted" id="dvNaExit">Exit</button>
+ </div>
+</div>
+
+<div class="dv-modal-wrap" id="dvRenameModalWrap">
+ <div class="dv-modal-backdrop" id="dvRenameModalBackdrop"></div>
+ <div class="dv-modal">
+  <h3>Rename Note</h3>
+  <div class="dv-field" style="margin-top:0">
+   <label for="dvRenameTitleInput">Note Title</label>
+   <input id="dvRenameTitleInput" class="dv-input" type="text" placeholder="Untitled Note" autocomplete="off">
+  </div>
+  <div class="dv-modal-actions" style="margin-top:16px">
+   <button class="dv-btn dv-fill-black" id="dvRenameCancelBtn">Cancel</button>
+   <button class="dv-btn dv-fill-success" id="dvRenameConfirmBtn">Save</button>
+  </div>
+ </div>
+</div>
+
+<div class="dv-modal-wrap" id="dvSaveModalWrap">
+ <div class="dv-modal-backdrop" id="dvSaveModalBackdrop"></div>
+ <div class="dv-modal">
+  <h3>Save Note</h3>
+  <div class="dv-field" style="margin-top:0">
+   <label for="dvSaveTitleInput">Note Title</label>
+   <input id="dvSaveTitleInput" class="dv-input" type="text" placeholder="Untitled Note" autocomplete="off">
+  </div>
+  <div class="dv-modal-actions" style="margin-top:16px">
+   <button class="dv-btn dv-fill-black" id="dvSaveCancelBtn">Cancel</button>
+   <button class="dv-btn dv-fill-success" id="dvSaveConfirmBtn">Save</button>
+  </div>
+ </div>
+</div>
+
+<div class="dv-modal-wrap" id="dvModalWrap" role="dialog" aria-modal="true" aria-labelledby="dvModalTitle">
+ <div class="dv-modal-backdrop" id="dvModalBackdrop"></div>
+ <div class="dv-modal">
+  <h3 id="dvModalTitle">Confirm</h3>
+  <p id="dvModalMessage"></p>
+  <div class="dv-modal-actions" id="dvModalActions">
+   <button class="dv-btn dv-secondary" id="dvModalCancel">Cancel</button>
+   <button class="dv-btn dv-primary" id="dvModalOk">OK</button>
+  </div>
+ </div>
+</div>
+
+<div class="dv-install" id="dvInstall" role="region" aria-label="Install app">
+ <div class="dv-install-text">
+  <strong>Install DV Icons &amp; Images</strong>
+  <span>Add to your home screen for offline use.</span>
+ </div>
+ <button class="dv-install-btn" id="dvInstallBtn">Install</button>
+ <button class="dv-install-close" id="dvInstallClose" aria-label="Dismiss">&times;</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
