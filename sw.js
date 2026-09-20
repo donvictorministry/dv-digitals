@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'dv-icons-images-v2';
+const CACHE_NAME = 'dv-icons-images-v3';
 const CORE_ASSETS = [
   './',
   './index.html',
