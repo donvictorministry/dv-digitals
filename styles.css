@@ -1,4 +1,3 @@
-
 :root{
  --dv-p:#1877F2;
  --dv-bg:#fff;
@@ -175,7 +174,7 @@ textarea.dv-input{min-height:70px;resize:vertical;font-family:inherit}
 }
 .dv-side-title{font-size:20px;font-weight:800}
 .dv-close{
- font-size:26px;width:42px;height:42px;
+ font-size:28px;width:42px;height:42px;
  display:flex;align-items:center;justify-content:center;border-radius:50%;
 }
 .dv-close:active{background:var(--dv-hover)}
@@ -217,6 +216,38 @@ textarea.dv-input{min-height:70px;resize:vertical;font-family:inherit}
  font-size:13px;font-weight:700;text-decoration:none;padding:8px 2px;
 }
 .dv-cta-btn:active{background:var(--dv-hover)}
+.dv-search-row{
+ display:flex;align-items:center;gap:10px;
+ background:var(--dv-hover);border-radius:32px;
+ padding:12px 18px;margin-bottom:14px;
+}
+.dv-search-row .dv-icon{color:var(--dv-p);flex:0 0 auto}
+.dv-search-row input{
+ flex:1;border:0;outline:none;background:transparent;
+ color:var(--dv-text);font-size:19px;
+}
+.dv-search-row input::placeholder{color:var(--dv-muted)}
+.dv-fab-anchor{
+ position:fixed;right:20px;
+ bottom:calc(90px + env(safe-area-inset-bottom));
+ width:min(72vw,260px);
+}
+.dv-fab .dv-icon{transition:transform .2s}
+.dv-fab.dv-fab-open .dv-icon{transform:rotate(135deg)}
+.dv-fabmenu-overlay{position:fixed;inset:0;z-index:74;display:none;background:transparent}
+.dv-fabmenu-overlay.open{display:block}
+.dv-fab-pill{
+ position:fixed;right:20px;
+ display:flex;align-items:center;gap:10px;
+ background:var(--dv-hover);color:var(--dv-p);
+ font-weight:800;font-size:17px;
+ padding:14px 22px;border-radius:32px;
+ box-shadow:0 8px 22px #0003;white-space:nowrap;
+}
+.dv-fab-pill .dv-icon{width:22px;height:22px;color:var(--dv-p)}
+.dv-fab-pill:active{background:#dce9ff}
+.dv-fab-pill-near{bottom:calc(90px + env(safe-area-inset-bottom))}
+.dv-fab-pill-far{bottom:calc(158px + env(safe-area-inset-bottom))}
 
 /* Notepad */
 .dv-fab{
@@ -231,7 +262,7 @@ textarea.dv-input{min-height:70px;resize:vertical;font-family:inherit}
  border:1px solid var(--dv-border);margin-bottom:8px;
 }
 .dv-note-row-main{flex:1;text-align:left;overflow:hidden;background:transparent;min-height:0;padding:0}
-.dv-note-row-main strong{display:block;font-size:19px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dv-note-row-main strong{display:block;font-size:19px;font-weight:800;color:var(--dv-p);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dv-note-row-main span{display:block;font-size:14px;color:var(--dv-muted);margin-top:2px}
 .dv-note-dots{width:40px;height:40px;flex:0 0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center}
 .dv-note-dots:active{background:var(--dv-hover)}
@@ -262,7 +293,7 @@ textarea.dv-input{min-height:70px;resize:vertical;font-family:inherit}
  flex:1;border:0;outline:none;resize:none;padding:16px;
  background:var(--dv-bg);color:var(--dv-text);
  font-family:Roboto,-apple-system,system-ui,sans-serif;
- font-size:26px;line-height:1.5;
+ font-size:28px;line-height:1.5;
 }
 .dv-dropdown-overlay{position:fixed;inset:0;z-index:80;display:none;background:transparent}
 .dv-dropdown-overlay.open{display:block}
@@ -384,24 +415,32 @@ textarea.dv-input{min-height:70px;resize:vertical;font-family:inherit}
 
 /* Install prompt */
 .dv-install{
- position:fixed;left:14px;right:14px;
- bottom:calc(74px + env(safe-area-inset-bottom));
- z-index:90;
- background:var(--dv-card);color:var(--dv-text);
- border:1px solid var(--dv-border);border-radius:14px;
- padding:14px;display:flex;align-items:center;gap:12px;
- box-shadow:0 12px 30px #0004;
- transform:translateY(140%);transition:transform .3s;
+ position:fixed;left:0;right:0;top:0;bottom:0;
+ z-index:90;display:flex;align-items:center;justify-content:center;
+ padding:24px;background:transparent;pointer-events:none;
+ opacity:0;transition:opacity .25s;
 }
-.dv-install.show{transform:translateY(0)}
-.dv-install-text{flex:1;font-size:19px;line-height:1.35}
-.dv-install-text strong{display:block;font-weight:800}
+.dv-install.show{opacity:1;pointer-events:auto}
+.dv-install-card{
+ position:relative;width:100%;max-width:340px;
+ background:var(--dv-card);color:var(--dv-text);
+ border:1px solid var(--dv-border);border-radius:20px;
+ padding:26px 22px 22px;text-align:center;
+ box-shadow:0 20px 50px #0005;
+ transform:scale(.92);transition:transform .25s;
+}
+.dv-install.show .dv-install-card{transform:scale(1)}
+.dv-install-text{font-size:19px;line-height:1.4}
+.dv-install-text strong{display:block;font-weight:800;font-size:21px;margin-bottom:6px}
 .dv-install-text span{color:var(--dv-muted);font-size:19px}
 .dv-install-btn{
+ margin-top:18px;width:100%;
  background:var(--dv-p);color:#fff;font-weight:700;
- padding:10px 14px;border-radius:10px;font-size:19px;
+ padding:12px 14px;border-radius:12px;font-size:19px;
+ display:flex;align-items:center;justify-content:center;gap:8px;
 }
 .dv-install-close{
+ position:absolute;top:10px;right:10px;
  width:36px;height:36px;border-radius:50%;
  display:flex;align-items:center;justify-content:center;
  font-size:22px;color:var(--dv-muted);
