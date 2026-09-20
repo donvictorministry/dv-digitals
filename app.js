@@ -6,6 +6,7 @@ const dvIconMoon='<svg class="dv-icon" viewBox="0 0 24 24"><path d="M21 12.8A9 9
 const dvIconSun='<svg class="dv-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8L6 18M18 6l1.8-1.8"/></g></svg>';
 const dvIconDownload='<svg class="dv-icon" viewBox="0 0 24 24"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17.3l-4.7-5.6 1.4-1.4L12 13.6V3zM5 19h14v2H5z"/></svg>';
 
+/* ---------- Font readiness ---------- */
 const dvFontReady=async()=>{
  if(document.fonts&&document.fonts.ready){
   try{await document.fonts.ready;}catch{}
@@ -39,6 +40,7 @@ const dvResolveColor=input=>{
  return dvRgbToHex(computed);
 };
 
+/* ---------- Center Modal ---------- */
 const dvModalWrap=dvId('dvModalWrap');
 const dvModalTitle=dvId('dvModalTitle');
 const dvModalMessage=dvId('dvModalMessage');
@@ -80,6 +82,7 @@ document.addEventListener('keydown',e=>{
 const dvConfirm=(message,title='Confirm')=>dvModalOpen(title,message,{confirm:true});
 const dvNotify=(message,title='Notice')=>dvModalOpen(title,message,{confirm:false,okText:'OK'});
 
+/* ---------- Centered toast (replaces inline status banner) ---------- */
 const dvToastEl=dvId('dvToast');
 let dvToastTimer=null;
 const dvShow=(text,type)=>{
@@ -90,6 +93,7 @@ const dvShow=(text,type)=>{
 };
 const dvClear=()=>{dvToastEl.classList.remove('show');};
 
+/* ---------- Theme ---------- */
 const dvThemeBtn=dvId('dvThemeBtn');
 const dvThemeMeta=dvId('dvThemeMeta');
 const dvDarkSwitch=dvId('dvDarkSwitch');
@@ -117,6 +121,7 @@ dvThemeBtn.onclick=dvToggleTheme;
 dvDarkSwitch.onclick=dvToggleTheme;
 dvInitTheme();
 
+/* ---------- Sidebars ---------- */
 const dvInfoMenu=dvId('dvInfoMenu'), dvHamburgerBtn=dvId('dvHamburgerBtn');
 const dvInfoList=dvId('dvInfoList'), dvInfoBackBtn=dvId('dvInfoBackBtn'), dvInfoCloseBtn=dvId('dvInfoCloseBtn'), dvInfoMenuTitle=dvId('dvInfoMenuTitle');
 const dvInfoPages=document.querySelectorAll('.dv-info-page');
@@ -162,6 +167,7 @@ document.addEventListener('keydown',e=>{
  if(dvSettingsSidebar.classList.contains('open'))dvCloseSettings();
 });
 
+/* ---------- Tabs / bottom nav ---------- */
 const dvViewImage=dvId('dvViewImage'), dvViewBanner=dvId('dvViewBanner');
 const dvNavImage=dvId('dvNavImage'), dvNavBanner=dvId('dvNavBanner'), dvNavSettings=dvId('dvNavSettings');
 const dvSwitchTab=which=>{
@@ -178,6 +184,7 @@ dvNavImage.onclick=()=>dvSwitchTab('image');
 dvNavBanner.onclick=()=>dvSwitchTab('banner');
 dvNavSettings.onclick=dvOpenSettings;
 
+/* ============ IMAGE TAB ============ */
 const dvDrop=dvId('dvDrop'), dvFile=dvId('dvFile'), dvEditor=dvId('dvEditor'), dvPreview=dvId('dvPreview'),
  dvInfo=dvId('dvInfo'), dvName=dvId('dvName'), dvFormat=dvId('dvFormat'), dvWidth=dvId('dvWidth'),
  dvQuality=dvId('dvQuality'),
@@ -278,6 +285,7 @@ const dvLoadBitmap=async f=>{
  }
 };
 
+/* Hardcoded, non-toggleable watermark for exported/processed output */
 const dvApplyWatermark=(ctx,w,h)=>{
  const mark='DV';
  const size=Math.max(18,Math.round(Math.min(w,h)*0.05));
@@ -767,12 +775,18 @@ dvInstallBtn.innerHTML=dvIconDownload+'<span>Install</span>';
 window.addEventListener('beforeinstallprompt',e=>{
  e.preventDefault();
  dvDeferredPrompt=e;
- if(sessionStorage.getItem('dv-install-dismissed')==='1')return;
+ let installed=false, dismissedAt=0;
+ try{
+  installed=localStorage.getItem('dv-app-installed')==='1';
+  dismissedAt=+(localStorage.getItem('dv-install-dismissed')||0);
+ }catch{}
+ if(installed)return;
+ if(Date.now()-dismissedAt<86400000)return;
  dvInstallBox.classList.add('show');
 });
 
 dvInstallBtn.onclick=async()=>{
- if(!dvDeferredPrompt){dvShow('Install option not available right now.','error');return;}
+ if(!dvDeferredPrompt){dvShow('Please wait and retry again.','error');return;}
  dvDeferredPrompt.prompt();
  const {outcome}=await dvDeferredPrompt.userChoice;
  dvDeferredPrompt=null;
@@ -782,13 +796,14 @@ dvInstallBtn.onclick=async()=>{
 
 dvInstallClose.onclick=()=>{
  dvInstallBox.classList.remove('show');
- try{sessionStorage.setItem('dv-install-dismissed','1');}catch{}
+ try{localStorage.setItem('dv-install-dismissed',String(Date.now()));}catch{}
 };
 
 dvId('dvSideInstall').onclick=()=>{dvCloseSettings();dvInstallBtn.click();};
 
 window.addEventListener('appinstalled',()=>{
  dvInstallBox.classList.remove('show');
+ try{localStorage.setItem('dv-app-installed','1');}catch{}
  dvShow('App installed.','success');
 });
 
@@ -836,7 +851,7 @@ const dvNoteDelete=id=>new Promise((resolve,reject)=>{
 
 let dvNotesCache=[];
 let dvActiveNoteId=null;
-let dvNoteZoom=26;
+let dvNoteZoom=28;
 let dvUndoStack=[], dvRedoStack=[];
 let dvActionsNoteId=null;
 
@@ -847,8 +862,12 @@ const dvFmtDate=ts=>{
 
 const dvRenderNotesList=()=>{
  dvNotesList.innerHTML='';
- dvNotesEmpty.classList.toggle('dv-hidden',dvNotesCache.length>0);
- dvNotesCache.slice().sort((a,b)=>b.updated-a.updated).forEach(note=>{
+ const q=(dvId('dvNoteSearch').value||'').trim().toLowerCase();
+ const filtered=q?dvNotesCache.filter(n=>(n.title||'').toLowerCase().includes(q)||(n.content||'').toLowerCase().includes(q)):dvNotesCache;
+ dvNotesEmpty.classList.toggle('dv-hidden',filtered.length>0);
+ if(q&&filtered.length===0)dvNotesEmpty.querySelector('p').textContent='No notes match your search.';
+ else dvNotesEmpty.querySelector('p').textContent='No notes yet. Tap the + button to create your first note.';
+ filtered.slice().sort((a,b)=>b.updated-a.updated).forEach(note=>{
   const row=document.createElement('div');
   row.className='dv-note-row';
   const main=document.createElement('button');
@@ -866,6 +885,7 @@ const dvRenderNotesList=()=>{
   dvNotesList.appendChild(row);
  });
 };
+dvId('dvNoteSearch').oninput=dvRenderNotesList;
 
 const dvLoadNotes=async()=>{
  if(!dvNoteDB)await dvNoteOpenDB();
@@ -887,15 +907,58 @@ const dvOpenWorkspace=id=>{
  dvNoteTextarea.value=note?note.content:'';
  dvWorkspaceTitle.textContent=note?(note.title||'Untitled Note'):'New Note';
  dvUndoStack=[dvNoteTextarea.value];dvRedoStack=[];
- dvNoteZoom=26;dvNoteTextarea.style.fontSize=dvNoteZoom+'px';
+ dvNoteZoom=28;dvNoteTextarea.style.fontSize=dvNoteZoom+'px';
  dvNotepadWorkspace.classList.add('open');
 };
-dvNotesFab.onclick=async()=>{
- const note={id:'n'+Date.now(),title:'Untitled Note',content:'',updated:Date.now()};
+const dvNoteTemplates=[
+  {title:'Faith & Devotion',topic:'Reflect on scripture, prayer requests, and your walk this week.',content:'Faith & Devotion\n\nToday I want to reflect on where my faith stands and how I can grow closer in my walk. What scripture or truth spoke to me recently, and why did it matter? List one area of doubt or struggle you are currently working through, and one promise that brings you comfort.\n\nConsider a specific prayer request you want to hold onto this week, for yourself, your family, or someone else in need. Write down one practical step you can take today to put your faith into action, whether that is reaching out to someone, forgiving a past hurt, or simply setting aside quiet time to be still.\n\nEnd with a short prayer of gratitude, naming three specific things you are thankful for right now. Faith grows best when it is written down and revisited, so come back to this note in a week and see how things have changed.\n\nLet this be an honest space, not a performance; write exactly what is true for you today, nothing more.'},
+  {title:'Family & Relationships',topic:'Appreciate loved ones and plan meaningful reconnections.',content:'Family & Relationships\n\nThink about the people closest to you right now: spouse, children, parents, siblings, or close friends. Write down one thing you appreciate about each person you list, however small.\n\nNote any tension or unresolved conversation you have been avoiding, and one gentle way you could open that conversation this week. Record an upcoming birthday, anniversary, or milestone you do not want to forget, along with an idea for how to mark it well.\n\nIf there is someone you have lost touch with, write their name down along with one memory that makes you smile. Consider what your family or close circle needs most from you right now: presence, patience, forgiveness, or simply more time.\n\nEnd this note with one small action you will take in the next 48 hours to invest in a relationship that matters. Relationships are built in ordinary moments more than grand gestures, so look for the small opening today.'},
+  {title:'Career & Work',topic:'Review wins, challenges, and your next career step.',content:'Career & Work\n\nUse this space to think clearly about where you stand professionally. What task or project is currently taking up most of your mental energy, and is that where it should be? Write down one win from this week, no matter how small, and one thing that did not go as planned along with what you learned.\n\nList any skill you have been meaning to develop and one concrete step to start this month. If you are facing a difficult decision at work, write out the options plainly along with the pros and cons of each.\n\nNote the name of one colleague or mentor you should reach out to for advice or encouragement. Consider your long-term direction: are your daily tasks moving you toward where you actually want to be in five years? End with one boundary you need to set or protect this week to keep your work sustainable rather than draining.'},
+  {title:'Health & Wellness',topic:'Check in on sleep, movement, stress, and daily habits.',content:'Health & Wellness\n\nTake a moment to check in honestly with your body and mind. How many hours of sleep have you been averaging, and how does that compare to what you actually need? Write down what you ate today and whether it left you feeling energized or sluggish.\n\nNote any physical activity you completed this week, even a short walk, and how it made you feel afterward. If you are carrying stress or anxiety, name the specific source rather than leaving it vague; naming it is the first step to addressing it.\n\nList one habit you want to build and one small trigger you will attach it to so it actually happens. Record any symptoms or changes worth mentioning to a doctor rather than trusting memory alone.\n\nEnd with one thing you are doing well for your health right now that deserves acknowledgment, not just criticism of what is missing.'},
+  {title:'Finances & Stewardship',topic:'Track spending, goals, and financial gratitude.',content:'Finances & Stewardship\n\nSet aside a few honest minutes to look at your financial picture. Write down your top three expenses from the past month and whether each one aligned with your actual priorities.\n\nNote any upcoming bill, debt payment, or financial deadline you cannot afford to forget. List one financial goal you are working toward, whether an emergency fund, a purchase, or paying down debt, and the specific amount you are aiming for.\n\nRecord one spending habit that quietly drains your budget more than you would like to admit. Consider whether you are giving, saving, and spending in proportions that reflect your real values.\n\nWrite down one practical adjustment you will make this week, even something small like a pause before non-essential purchases. End by noting one thing about your current financial situation you are genuinely grateful for, since perspective matters as much as numbers.'},
+  {title:'Personal Growth',topic:'Examine beliefs, habits, and who you are becoming.',content:'Personal Growth\n\nUse this page to take stock of who you are becoming, not just what you are doing. Write down one belief about yourself you have been carrying that may no longer be true or helpful.\n\nNote a recent moment when you reacted in a way you were not proud of, and what a better response might look like next time. List a book, conversation, or experience that recently shifted your thinking, and how.\n\nIdentify one habit or comfort zone that is quietly holding you back from growth. Write down one skill, virtue, or discipline you want to be known for a year from now, and a small daily practice that builds toward it.\n\nConsider who you spend the most time with and whether those relationships are stretching you or shrinking you. End with one specific, honest sentence describing the person you are trying to become.'},
+  {title:'Goals & Planning',topic:'Turn one big goal into concrete next steps.',content:'Goals & Planning\n\nThis is your space to turn vague intentions into a real plan. Write down the single most important goal you are pursuing this quarter, stated as specifically as possible.\n\nBreak it into three concrete milestones with rough target dates rather than one distant finish line. Note any resource, skill, or support you are currently missing to move forward, and where you might get it.\n\nList one thing competing for your time and attention that you may need to say no to in order to protect focus on this goal. Record what success will actually look and feel like when you get there, in specific enough terms that you will recognize it.\n\nIdentify the very next physical action you can take today, no matter how small. End by writing down who, if anyone, you will tell about this goal to build helpful accountability rather than carrying it alone.'},
+  {title:'Gratitude Journal',topic:'Name specific blessings and good things from today.',content:'Gratitude Journal\n\nBefore moving on with your day, slow down enough to notice what is actually good. Write down three specific things that happened today that you are grateful for, being as concrete as possible rather than general.\n\nName one person who made your day easier or better in some way, and consider sending them a short message of thanks. Note one difficulty you faced today and, if you can find it honestly, one small good that came alongside it.\n\nWrite down something about your body, home, or daily routine that you often take for granted but genuinely value. Consider one thing about your current season of life, even if imperfect, that you would miss if it were gone.\n\nEnd by writing a short sentence of thanks addressed to whoever or whatever you feel it belongs to. Gratitude noticed and written down tends to grow; left unspoken, it fades quickly.'},
+  {title:'Community & Service',topic:'Find one practical way to serve someone this week.',content:'Community & Service\n\nReflect on your place within the people and community around you. Write down one person or family in your circle who could use encouragement, a visit, or practical help right now.\n\nNote any way you have recently been served or helped by someone else that you have not properly acknowledged. List one skill, resource, or bit of time you have available this month that could genuinely benefit someone outside your immediate household.\n\nConsider whether you have been more focused on receiving from your community than contributing to it lately. Write down one local need, cause, or group you feel drawn to but have not yet acted on.\n\nRecord a specific, doable next step, such as a phone call, a small donation, or an hour of your time. End by noting how being part of something bigger than yourself changes the way you see your own daily struggles.'},
+  {title:'Reflection & Prayer Requests',topic:'Sit with open questions and requests for others.',content:'Reflection & Prayer Requests\n\nUse this space to slow down and take honest stock of where things stand. Write down the biggest question or uncertainty currently on your mind, without trying to resolve it yet.\n\nNote one specific situation, relationship, or decision you would like to bring into your prayers or quiet reflection this week. List someone else who is going through a hard season and needs to be remembered, along with what they are facing.\n\nRecord one thing that happened recently that you still do not fully understand, and sit with that honestly rather than forcing a tidy explanation. Write down one thing you hope for in the coming weeks, stated plainly.\n\nConsider what peace or clarity would actually look like in your current situation. End with a short, honest sentence naming what you most need right now, whether that is strength, patience, direction, or rest.'}
+];
+
+const dvFabMenuWrap=dvId('dvFabMenuWrap'), dvTemplateMenuWrap=dvId('dvTemplateMenuWrap'), dvTemplateMenuCard=dvId('dvTemplateMenuCard');
+const dvCloseFabMenu=()=>{dvFabMenuWrap.classList.remove('open');dvNotesFab.classList.remove('dv-fab-open');};
+const dvCloseTemplateMenu=()=>dvTemplateMenuWrap.classList.remove('open');
+dvFabMenuWrap.onclick=e=>{if(e.target===dvFabMenuWrap)dvCloseFabMenu();};
+dvTemplateMenuWrap.onclick=e=>{if(e.target===dvTemplateMenuWrap)dvCloseTemplateMenu();};
+
+const dvCreateNoteWith=async(title,content)=>{
+ const note={id:'n'+Date.now(),title:title||'Untitled Note',content:content||'',updated:Date.now()};
  dvNotesCache.push(note);
- await dvNotePut(note);
+ if((content||'').trim())await dvNotePut(note);
  dvOpenWorkspace(note.id);
 };
+
+dvNotesFab.onclick=()=>{
+ const isOpen=dvFabMenuWrap.classList.toggle('open');
+ dvNotesFab.classList.toggle('dv-fab-open',isOpen);
+};
+dvId('dvFabNewNote').onclick=async()=>{dvCloseFabMenu();await dvCreateNoteWith('Untitled Note','');};
+dvId('dvFabTemplates').onclick=()=>{
+ dvCloseFabMenu();
+ dvTemplateMenuCard.innerHTML=dvNoteTemplates.map((t,i)=>
+  '<button class="dv-note-row" style="width:100%;text-align:left;display:block" data-i="'+i+'">'+
+  '<strong style="display:block;font-size:19px;font-weight:800;color:var(--dv-p)">'+t.title+'</strong>'+
+  '<span style="display:block;font-size:15px;color:var(--dv-muted);margin-top:4px">'+t.topic+'</span>'+
+  '</button>'
+ ).join('');
+ dvTemplateMenuCard.querySelectorAll('[data-i]').forEach(btn=>{
+  btn.onclick=async()=>{
+   const t=dvNoteTemplates[+btn.dataset.i];
+   dvCloseTemplateMenu();
+   await dvCreateNoteWith(t.title,t.content);
+  };
+ });
+ dvTemplateMenuWrap.classList.add('open');
+};
+dvId('dvTemplateMenuCloseBtn').onclick=dvCloseTemplateMenu;
 const dvCloseWorkspace=async()=>{
  dvNotepadWorkspace.classList.remove('open');
  await dvLoadNotes();
@@ -906,6 +969,7 @@ const dvSaveActiveNote=async(titleOverride)=>{
  if(!dvActiveNoteId)return;
  const idx=dvNotesCache.findIndex(n=>n.id===dvActiveNoteId);
  const content=dvNoteTextarea.value;
+ if(!content.trim()&&idx<0)return;
  const firstLine=(content.split('\n')[0]||'').trim();
  const title=(titleOverride&&titleOverride.trim())?titleOverride.trim().slice(0,60):(firstLine?firstLine.slice(0,60):'Untitled Note');
  const note={
@@ -981,8 +1045,8 @@ dvId('dvSaveConfirmBtn').onclick=async()=>{
  dvCloseSaveModal();
 };
 dvId('dvTbSelect').onclick=()=>dvNoteTextarea.select();
-dvId('dvTbZoomIn').onclick=()=>{dvNoteZoom=Math.min(30,dvNoteZoom+2);dvNoteTextarea.style.fontSize=dvNoteZoom+'px';};
-dvId('dvTbZoomOut').onclick=()=>{dvNoteZoom=Math.max(24,dvNoteZoom-2);dvNoteTextarea.style.fontSize=dvNoteZoom+'px';};
+dvId('dvTbZoomIn').onclick=()=>{dvNoteZoom=Math.min(32,dvNoteZoom+2);dvNoteTextarea.style.fontSize=dvNoteZoom+'px';};
+dvId('dvTbZoomOut').onclick=()=>{dvNoteZoom=Math.max(26,dvNoteZoom-2);dvNoteTextarea.style.fontSize=dvNoteZoom+'px';};
 dvId('dvTbDark').onclick=dvToggleTheme;
 
 /* Per-note action dropdown */
@@ -1061,8 +1125,29 @@ dvId('dvNaShare').onclick=async()=>{
  }
 };
 
+/* Export note to the user's own device storage as a .txt file, so a note is never lost even if the app data is cleared. */
+const dvExportNote=note=>{
+ const text=(note.title||'Untitled Note')+'\n\n'+(note.content||'');
+ const blob=new Blob([text],{type:'text/plain'});
+ const url=URL.createObjectURL(blob);
+ const safeName=(note.title||'note').replace(/[<>:"/\\|?*\x00-\x1F]/g,'').trim()||'note';
+ const a=document.createElement('a');
+ a.href=url;a.download=safeName+'.txt';
+ document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+ dvShow('Note exported to your device.','success');
+};
+dvId('dvNaExport').onclick=()=>{
+ const note=dvNotesCache.find(n=>n.id===dvActionsNoteId);
+ dvCloseNoteActions();
+ if(!note)return;
+ dvExportNote(note);
+};
+
 document.addEventListener('keydown',e=>{
  if(e.key!=='Escape')return;
+ if(dvTemplateMenuWrap.classList.contains('open')){dvCloseTemplateMenu();return;}
+ if(dvFabMenuWrap.classList.contains('open')){dvCloseFabMenu();return;}
  if(dvRenameModalWrap.classList.contains('open')){dvCloseRenameModal();return;}
  if(dvSaveModalWrap.classList.contains('open')){dvCloseSaveModal();return;}
  if(dvNoteActionsWrap.classList.contains('open')){dvCloseNoteActions();return;}
@@ -1086,8 +1171,4 @@ window.addEventListener('resize',()=>{
 window.addEventListener('pagehide',()=>{
  dvRevoke(dvImgState.sourceUrl);dvRevoke(dvImgState.loaderUrl);dvRevoke(dvImgState.resultUrl);
 });
-
 })();
-
-
-
