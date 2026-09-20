@@ -4,14 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>DV Icons &amp; Images</title>
+
 <meta name="theme-color" content="#1877F2" id="dvThemeMeta">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="https://i.ibb.co/7JvSDTWk/file-0000000072b881f4b7d4a61c53613ad1.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="DV Icons & Images">
+<meta property="og:description" content="A self-contained, offline-first tool created by Rev. Don Victor, PhD, for creating icons, images, mobile banners, and notes directly on your phone without experience.">
+<meta property="og:image" content="https://i.ibb.co/7JvSDTWk/file-0000000072b881f4b7d4a61c53613ad1.png">
+<meta property="og:url" content="REPLACE-WITH-YOUR-DEPLOYED-URL">
 <link rel="manifest" href="./manifest.json">
 <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
 <div class="dv-app">
 <header class="dv-header">
@@ -61,8 +67,7 @@
    <option value="image/webp">WebP</option>
   </select>
  </div>
- 
-<div class="dv-field">
+ <div class="dv-field">
   <label for="dvWidth">Maximum Width (px)</label>
   <div class="dv-num-row">
    <button type="button" class="dv-stepper" id="dvWidthDown">-</button>
@@ -76,8 +81,7 @@
    <button type="button" class="dv-preset" data-w="1200">1200</button>
   </div>
  </div>
- 
-<div class="dv-field" id="dvQualityField">
+ <div class="dv-field" id="dvQualityField">
   <label for="dvQuality">Quality (%)</label>
   <div class="dv-num-row">
    <button type="button" class="dv-stepper" id="dvQualityDown">-</button>
@@ -85,8 +89,7 @@
    <button type="button" class="dv-stepper" id="dvQualityUp">+</button>
   </div>
  </div>
- 
-<div class="dv-actions">
+ <div class="dv-actions">
   <button id="dvProcess" class="dv-btn dv-primary">Prepare Image</button>
   <button id="dvRemove" class="dv-btn dv-danger">Remove Image</button>
  </div>
@@ -104,6 +107,7 @@
 </section>
 </div>
 
+<!-- BANNER TAB -->
 <div id="dvViewBanner" class="dv-hidden" style="overflow-x:hidden;max-width:100%">
 <section class="dv-card">
  <h2>Canvas Size</h2>
@@ -122,13 +126,11 @@
   <canvas id="dvBannerCanvas" class="dv-banner-canvas"></canvas>
   <div id="dvBannerItems"></div>
  </div>
- 
-<div class="dv-actions dv-row">
+ <div class="dv-actions dv-row">
   <button id="dvAddText" class="dv-btn dv-primary">+ Text</button>
   <button id="dvAddAuthor" class="dv-btn dv-primary">+ Author</button>
  </div>
- 
-<div class="dv-actions dv-row">
+ <div class="dv-actions dv-row">
   <button id="dvSetBgImage" class="dv-btn dv-secondary">+ Background</button>
   <button id="dvBannerDownloadTop" class="dv-btn dv-secondary">Save</button>
  </div>
@@ -141,8 +143,7 @@
   <label for="dvTextContent">Content</label>
   <textarea id="dvTextContent" class="dv-input" rows="2"></textarea>
  </div>
- 
-<div class="dv-field">
+ <div class="dv-field">
   <label for="dvTextSize">Font Size (px)</label>
   <div class="dv-num-row">
    <button type="button" class="dv-stepper" id="dvTextSizeDown">-</button>
@@ -150,7 +151,6 @@
    <button type="button" class="dv-stepper" id="dvTextSizeUp">+</button>
   </div>
  </div>
-
  <div class="dv-tool-row">
   <button class="dv-tool-btn" id="dvBoldBtn"><b>B</b> Bold</button>
   <button class="dv-tool-btn" id="dvItalicBtn"><i>I</i> Italic</button>
@@ -163,8 +163,7 @@
   </div>
   <div class="dv-swatches" id="dvTextSwatches"></div>
  </div>
- 
-<div class="dv-field">
+ <div class="dv-field">
   <label>Background Color</label>
   <div class="dv-color-row">
    <input id="dvBgColor" type="color" value="#ffffff" class="dv-color-swatch">
@@ -242,6 +241,7 @@
  </aside>
 </div>
 
+<!-- FULL-PAGE INFO MENU (hamburger) -->
 <div class="dv-fullmenu" id="dvInfoMenu" role="dialog" aria-modal="true" aria-label="Menu">
  <div class="dv-fullmenu-head">
   <button class="dv-close dv-hidden" id="dvInfoBackBtn" aria-label="Back">
@@ -318,9 +318,11 @@
     </a>
    </div>
   </div>
+
  </div>
 </div>
 
+<!-- NOTEPAD: LANDING MODAL -->
 <div class="dv-fullmenu" id="dvNotepadLanding" role="dialog" aria-modal="true" aria-label="Notepad">
  <div class="dv-fullmenu-head">
   <div style="width:42px"></div>
@@ -328,12 +330,37 @@
   <button class="dv-close" id="dvNotepadCloseBtn" aria-label="Close notepad">&times;</button>
  </div>
  <div class="dv-fullmenu-body">
+  <div class="dv-search-row">
+   <svg class="dv-icon" viewBox="0 0 24 24"><path d="M10 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm7.5 10.1 4.4 4.4-1.4 1.4-4.4-4.4z"/></svg>
+   <input id="dvNoteSearch" type="text" placeholder="Search saved notes" autocomplete="off">
+  </div>
   <div id="dvNotesEmpty" class="dv-info-page"><p>No notes yet. Tap the + button to create your first note.</p></div>
   <div id="dvNotesList"></div>
  </div>
- <button class="dv-fab" id="dvNotesFab" aria-label="New note">+</button>
+ <button class="dv-fab" id="dvNotesFab" aria-label="New note">
+  <svg class="dv-icon" id="dvFabIcon" viewBox="0 0 24 24"><path d="M11 4h2v7h7v2h-7v7h-2v-7H4v-2h7z"/></svg>
+ </button>
+ <div class="dv-fabmenu-overlay" id="dvFabMenuWrap">
+  <button class="dv-fab-pill dv-fab-pill-far" id="dvFabTemplates">
+   <svg class="dv-icon" viewBox="0 0 24 24"><path d="M6 2h9l5 5v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm8 1.5V8h4.5zM8 12h8v2H8v-2zm0 4h8v2H8v-2z"/></svg>
+   <span>Notepad Template</span>
+  </button>
+  <button class="dv-fab-pill dv-fab-pill-near" id="dvFabNewNote">
+   <svg class="dv-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"/></svg>
+   <span>Notepad</span>
+  </button>
+ </div>
+ <div class="dv-fullmenu" id="dvTemplateMenuWrap" role="dialog" aria-modal="true" aria-label="Notepad Templates">
+  <div class="dv-fullmenu-head">
+   <div style="width:42px"></div>
+   <div class="dv-side-title">Notepad Templates</div>
+   <button class="dv-close" id="dvTemplateMenuCloseBtn" aria-label="Close templates">&times;</button>
+  </div>
+  <div class="dv-fullmenu-body" id="dvTemplateMenuCard"></div>
+ </div>
 </div>
 
+<!-- NOTEPAD: WORKSPACE MODAL -->
 <div class="dv-fullmenu" id="dvNotepadWorkspace" role="dialog" aria-modal="true" aria-label="Note editor">
  <div class="dv-fullmenu-head dv-fullmenu-head-accent">
   <button class="dv-close" id="dvWorkspaceBackBtn" aria-label="Back to notes">
@@ -390,6 +417,7 @@
  <textarea id="dvNoteTextarea" class="dv-note-textarea"></textarea>
 </div>
 
+<!-- NOTEPAD: PER-NOTE ACTION SHEET -->
 <div class="dv-dropdown-overlay" id="dvNoteActionsWrap">
  <div class="dv-dropdown-card" id="dvNoteActionsCard">
   <button class="dv-dropdown-item dv-color-primary" id="dvNaRename">Rename</button>
@@ -397,10 +425,12 @@
   <button class="dv-dropdown-item dv-color-danger" id="dvNaDelete">Delete</button>
   <button class="dv-dropdown-item dv-color-green" id="dvNaWhatsapp">Share to WhatsApp</button>
   <button class="dv-dropdown-item" id="dvNaShare">Share Sheet</button>
+  <button class="dv-dropdown-item dv-color-primary" id="dvNaExport">Export to Device</button>
   <button class="dv-dropdown-item dv-color-muted" id="dvNaExit">Exit</button>
  </div>
 </div>
 
+<!-- NOTEPAD: RENAME POPUP -->
 <div class="dv-modal-wrap" id="dvRenameModalWrap">
  <div class="dv-modal-backdrop" id="dvRenameModalBackdrop"></div>
  <div class="dv-modal">
@@ -416,6 +446,7 @@
  </div>
 </div>
 
+<!-- NOTEPAD: SAVE POPUP -->
 <div class="dv-modal-wrap" id="dvSaveModalWrap">
  <div class="dv-modal-backdrop" id="dvSaveModalBackdrop"></div>
  <div class="dv-modal">
@@ -431,6 +462,7 @@
  </div>
 </div>
 
+<!-- CENTER MODAL -->
 <div class="dv-modal-wrap" id="dvModalWrap" role="dialog" aria-modal="true" aria-labelledby="dvModalTitle">
  <div class="dv-modal-backdrop" id="dvModalBackdrop"></div>
  <div class="dv-modal">
@@ -443,13 +475,16 @@
  </div>
 </div>
 
-<div class="dv-install" id="dvInstall" role="region" aria-label="Install app" style="display: none;">
- <div class="dv-install-text">
-  <strong>Install DV Icons &amp; Images</strong>
-  <span>Add to your home screen for offline use.</span>
+<!-- INSTALL PROMPT -->
+<div class="dv-install" id="dvInstall" role="region" aria-label="Install app">
+ <div class="dv-install-card">
+  <button class="dv-install-close" id="dvInstallClose" aria-label="Dismiss">&times;</button>
+  <div class="dv-install-text">
+   <strong>Install DV Icons &amp; Images</strong>
+   <span>Add to your home screen for offline use.</span>
+  </div>
+  <button class="dv-install-btn" id="dvInstallBtn">Install</button>
  </div>
- <button class="dv-install-btn" id="dvInstallBtn">Install</button>
- <button class="dv-install-close" id="dvInstallClose" aria-label="Dismiss">&times;</button>
 </div>
 
 <script src="app.js"></script>
