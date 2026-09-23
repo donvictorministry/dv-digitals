@@ -320,7 +320,7 @@ textarea.dv-input{min-height:70px;resize:vertical;font-family:inherit}
 .dv-banner-stage{
  position:relative;background:var(--dv-stage);
  border:1px solid var(--dv-border);border-radius:14px;
- overflow:hidden;margin-bottom:10px;touch-action:none;
+ overflow:hidden;margin-bottom:10px;touch-action:pan-y;
  max-width:100%;
 }
 .dv-banner-canvas{display:block;width:100%;height:auto;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
