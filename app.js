@@ -287,26 +287,22 @@ const dvLoadBitmap=async f=>{
 
 /* Hardcoded, non-toggleable watermark for exported/processed output */
 const dvApplyWatermark=(ctx,w,h)=>{
- const mark='DV';
- const size=Math.max(18,Math.round(Math.min(w,h)*0.05));
+ /* ===== WATERMARK — EDIT ANYTHING BELOW TO CUSTOMIZE ===== */
+ const mark='DV';                        // <-- watermark text
+ const dvWmPosition='top-right';         // <-- 'top-right' or 'bottom-right'
+ const dvWmColor='rgba(255,255,255,0.85)'; // <-- text color/opacity
+ const dvWmMargin=16;                    // <-- distance from the edge, in px
+ const size=Math.max(18,Math.round(Math.min(w,h)*0.035)); // <-- font size ratio
+ /* ===== END EDITABLE SECTION ===== */
+
  ctx.save();
  ctx.font='700 '+size+'px Roboto, sans-serif';
- ctx.fillStyle='rgba(255,255,255,0.16)';
- ctx.strokeStyle='rgba(0,0,0,0.10)';
- ctx.lineWidth=Math.max(1,size*0.04);
- ctx.textBaseline='middle';
- ctx.translate(w/2,h/2);
- ctx.rotate(-Math.PI/8);
- const stepX=size*4.2, stepY=size*3.2;
- const cols=Math.ceil((w+h)/stepX)+2, rows=Math.ceil((w+h)/stepY)+2;
- for(let r=-rows;r<=rows;r++){
-  for(let c=-cols;c<=cols;c++){
-   const x=c*stepX+(r%2?stepX/2:0);
-   const y=r*stepY;
-   ctx.strokeText(mark,x,y);
-   ctx.fillText(mark,x,y);
-  }
- }
+ ctx.fillStyle=dvWmColor;
+ ctx.textAlign='right';
+ const x=w-dvWmMargin;
+ const y=(dvWmPosition==='top-right')?(dvWmMargin+size):(h-dvWmMargin);
+ ctx.textBaseline=(dvWmPosition==='top-right')?'top':'alphabetic';
+ ctx.fillText(mark,x,y);
  ctx.restore();
 };
 
@@ -872,14 +868,15 @@ const dvRenderNotesList=()=>{
   row.className='dv-note-row';
   const main=document.createElement('button');
   main.className='dv-note-row-main';
-  main.innerHTML='<strong></strong><span></span>';
-  main.querySelector('strong').textContent=note.title||'Untitled Note';
+  const lockIcon=note.pin?'<svg class="dv-icon" style="width:15px;height:15px;vertical-align:-2px;margin-right:4px" viewBox="0 0 24 24"><path d="M12 2a4 4 0 0 1 4 4v3h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h1V6a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v3h4V6a2 2 0 0 0-2-2z"/></svg>':'';
+  main.innerHTML='<strong>'+lockIcon+'</strong><span></span>';
+  main.querySelector('strong').append(document.createTextNode(note.title||'Untitled Note'));
   main.querySelector('span').textContent=dvFmtDate(note.updated);
-  main.onclick=()=>dvOpenWorkspace(note.id);
+  main.onclick=()=>dvTryOpenWorkspace(note.id);
   const dots=document.createElement('button');
   dots.className='dv-note-dots';
   dots.setAttribute('aria-label','Note options');
-  dots.innerHTML='<svg class="dv-icon" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>';
+  dots.innerHTML='<svg class="dv-icon" style="width:26px;height:26px;color:var(--dv-text)" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.6"/><circle cx="12" cy="12" r="2.6"/><circle cx="12" cy="19" r="2.6"/></svg>';
   dots.onclick=e=>dvOpenNoteActions(note.id,e.currentTarget);
   row.appendChild(main);row.appendChild(dots);
   dvNotesList.appendChild(row);
@@ -909,6 +906,63 @@ const dvOpenWorkspace=id=>{
  dvUndoStack=[dvNoteTextarea.value];dvRedoStack=[];
  dvNoteZoom=28;dvNoteTextarea.style.fontSize=dvNoteZoom+'px';
  dvNotepadWorkspace.classList.add('open');
+};
+
+/* PIN protection: gate note opening behind a 4-digit PIN if one is set */
+let dvPinMode=null, dvPinTargetId=null, dvPinUnlockResolve=null;
+const dvPinModalWrap=dvId('dvPinModalWrap');
+const dvOpenPinModal=(mode,noteId)=>{
+ dvPinMode=mode;dvPinTargetId=noteId;
+ dvId('dvPinInput').value='';
+ const label=dvId('dvPinModalLabel'), title=dvId('dvPinModalTitle'), confirmBtn=dvId('dvPinConfirmBtn');
+ if(mode==='set'){title.textContent='Set PIN';label.textContent='Choose a 4-digit PIN';confirmBtn.textContent='Save';}
+ else if(mode==='remove'){title.textContent='Remove PIN';label.textContent='Enter current PIN to remove';confirmBtn.textContent='Remove';}
+ else{title.textContent='Enter PIN';label.textContent='This note is locked';confirmBtn.textContent='Unlock';}
+ dvPinModalWrap.classList.add('open');
+ dvId('dvPinInput').focus();
+};
+const dvClosePinModal=()=>{dvPinModalWrap.classList.remove('open');};
+dvId('dvPinCancelBtn').onclick=()=>{
+ dvClosePinModal();
+ if(dvPinMode==='unlock'&&dvPinUnlockResolve)dvPinUnlockResolve(false);
+ dvPinUnlockResolve=null;
+};
+dvId('dvPinModalBackdrop').onclick=()=>dvId('dvPinCancelBtn').click();
+dvId('dvPinConfirmBtn').onclick=async()=>{
+ const val=dvId('dvPinInput').value.trim();
+ if(!/^\d{4}$/.test(val)){dvShow('Enter exactly 4 digits.','error');return;}
+ const note=dvNotesCache.find(n=>n.id===dvPinTargetId);
+ if(!note)return;
+ if(dvPinMode==='set'){
+  note.pin=val;note.updated=Date.now();
+  await dvNotePut(note);
+  dvClosePinModal();
+  dvShow('Note locked with PIN.','success');
+  await dvLoadNotes();
+ }else if(dvPinMode==='remove'){
+  if(val!==note.pin){dvShow('Incorrect PIN.','error');return;}
+  delete note.pin;note.updated=Date.now();
+  await dvNotePut(note);
+  dvClosePinModal();
+  dvShow('PIN removed.','success');
+  await dvLoadNotes();
+ }else if(dvPinMode==='unlock'){
+  if(val!==note.pin){dvShow('Incorrect PIN.','error');return;}
+  dvClosePinModal();
+  if(dvPinUnlockResolve)dvPinUnlockResolve(true);
+  dvPinUnlockResolve=null;
+ }
+};
+const dvTryOpenWorkspace=async id=>{
+ const note=dvNotesCache.find(n=>n.id===id);
+ if(note&&note.pin){
+  const ok=await new Promise(resolve=>{
+   dvPinUnlockResolve=resolve;
+   dvOpenPinModal('unlock',id);
+  });
+  if(!ok)return;
+ }
+ dvOpenWorkspace(id);
 };
 const dvNoteTemplates=[
   {title:'Faith & Devotion',topic:'Reflect on scripture, prayer requests, and your walk this week.',content:'Faith & Devotion\n\nToday I want to reflect on where my faith stands and how I can grow closer in my walk. What scripture or truth spoke to me recently, and why did it matter? List one area of doubt or struggle you are currently working through, and one promise that brings you comfort.\n\nConsider a specific prayer request you want to hold onto this week, for yourself, your family, or someone else in need. Write down one practical step you can take today to put your faith into action, whether that is reaching out to someone, forgiving a past hurt, or simply setting aside quiet time to be still.\n\nEnd with a short prayer of gratitude, naming three specific things you are thankful for right now. Faith grows best when it is written down and revisited, so come back to this note in a week and see how things have changed.\n\nLet this be an honest space, not a performance; write exactly what is true for you today, nothing more.'},
@@ -1093,10 +1147,17 @@ dvId('dvNaRename').onclick=()=>{
  dvRenameModalWrap.classList.add('open');
  dvId('dvRenameTitleInput').focus();
 };
+dvId('dvNaPin').onclick=()=>{
+ const note=dvNotesCache.find(n=>n.id===dvActionsNoteId);
+ const targetId=dvActionsNoteId;
+ dvCloseNoteActions();
+ if(!note)return;
+ dvOpenPinModal(note.pin?'remove':'set',targetId);
+};
 dvId('dvNaEdit').onclick=()=>{
  const id=dvActionsNoteId;
  dvCloseNoteActions();
- dvOpenWorkspace(id);
+ dvTryOpenWorkspace(id);
 };
 dvId('dvNaDelete').onclick=async()=>{
  const id=dvActionsNoteId;
@@ -1148,6 +1209,7 @@ document.addEventListener('keydown',e=>{
  if(e.key!=='Escape')return;
  if(dvTemplateMenuWrap.classList.contains('open')){dvCloseTemplateMenu();return;}
  if(dvFabMenuWrap.classList.contains('open')){dvCloseFabMenu();return;}
+ if(dvPinModalWrap.classList.contains('open')){dvId('dvPinCancelBtn').click();return;}
  if(dvRenameModalWrap.classList.contains('open')){dvCloseRenameModal();return;}
  if(dvSaveModalWrap.classList.contains('open')){dvCloseSaveModal();return;}
  if(dvNoteActionsWrap.classList.contains('open')){dvCloseNoteActions();return;}
@@ -1171,4 +1233,5 @@ window.addEventListener('resize',()=>{
 window.addEventListener('pagehide',()=>{
  dvRevoke(dvImgState.sourceUrl);dvRevoke(dvImgState.loaderUrl);dvRevoke(dvImgState.resultUrl);
 });
+
 })();
