@@ -117,6 +117,8 @@
   <button class="dv-chip" data-w="1080" data-h="1920">1080x1920</button>
   <button class="dv-chip" data-w="1920" data-h="1080">1920x1080</button>
   <button class="dv-chip" data-w="800" data-h="400">800x400</button>
+  <button class="dv-chip" data-w="1080" data-h="2400">Long Banner</button>
+  <button class="dv-chip" data-w="1080" data-h="2900">Mega Banner</button>
  </div>
 </section>
 
@@ -420,6 +422,7 @@
 <!-- NOTEPAD: PER-NOTE ACTION SHEET -->
 <div class="dv-dropdown-overlay" id="dvNoteActionsWrap">
  <div class="dv-dropdown-card" id="dvNoteActionsCard">
+  <button class="dv-dropdown-item dv-color-primary" id="dvNaPin">PIN</button>
   <button class="dv-dropdown-item dv-color-primary" id="dvNaRename">Rename</button>
   <button class="dv-dropdown-item dv-color-primary" id="dvNaEdit">Edit Note</button>
   <button class="dv-dropdown-item dv-color-danger" id="dvNaDelete">Delete</button>
@@ -442,6 +445,22 @@
   <div class="dv-modal-actions" style="margin-top:16px">
    <button class="dv-btn dv-fill-black" id="dvRenameCancelBtn">Cancel</button>
    <button class="dv-btn dv-fill-success" id="dvRenameConfirmBtn">Save</button>
+  </div>
+ </div>
+</div>
+
+<!-- NOTEPAD: PIN POPUP (set / remove / unlock) -->
+<div class="dv-modal-wrap" id="dvPinModalWrap">
+ <div class="dv-modal-backdrop" id="dvPinModalBackdrop"></div>
+ <div class="dv-modal">
+  <h3 id="dvPinModalTitle">Set PIN</h3>
+  <div class="dv-field" style="margin-top:0">
+   <label for="dvPinInput" id="dvPinModalLabel">Choose a 4-digit PIN</label>
+   <input id="dvPinInput" class="dv-input" type="tel" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="••••" autocomplete="off" style="letter-spacing:8px;text-align:center">
+  </div>
+  <div class="dv-modal-actions" style="margin-top:16px">
+   <button class="dv-btn dv-fill-black" id="dvPinCancelBtn">Cancel</button>
+   <button class="dv-btn dv-fill-success" id="dvPinConfirmBtn">Save</button>
   </div>
  </div>
 </div>
